@@ -4,5 +4,5 @@
 2. Управление осуществляется стрелками на клавиатуре
 
 
-https://github.com/NoNoobSaibot/snake/assets/157010652/a64dab2e-c56d-475a-b725-dadebe8c9087
+https://github.com/NoNoobSaibot/snake/assets/157010652/03e04149-fe38-442d-beed-8f855c65c500
 
