@@ -237,8 +237,8 @@ class Eat{
 	}
 	
 	RandomSpawn(){
-		 this.X = this.getRandomNumber(2,8);
-		 this.Y = this.getRandomNumber(2,8);
+		 this.X = this.getRandomNumber(2,19);
+		 this.Y = this.getRandomNumber(2,19);
 		 this.Color = '#F55F90';
 	}
 	
