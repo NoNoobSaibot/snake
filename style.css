@@ -1,0 +1,18 @@
+body,html{
+	height:100%;
+	padding:0;
+	margin:0;
+}
+
+canvas{
+	background-color: #6dc987;
+	border: 1px solid black;
+}
+
+.container{
+	height:inherit;
+	
+	display:flex;
+	justify-content:center;
+	align-items:center;
+}
