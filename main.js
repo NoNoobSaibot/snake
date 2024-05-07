@@ -66,8 +66,9 @@ class Game{
 			
 			this.conrolled = true;
 			this.startTime = timestamp;
+			this.gameobject.get('Snake').Direction();
 			this.gameobject.get('Snake').LogicEat(this.gameobject.get('Eat'),this.gameobject.get('Score'));
-			this.gameobject.get('Snake').Direction();			
+						
 		}
 		// РИСУЕМ ПОЛЕ
 		this.Draw(this.playGround.clientWidth,this.playGround.clientHeight);
@@ -93,12 +94,20 @@ class Game{
 				let rectY = height/20 * j;
 				
 				this.gameobject.get('Snake').print(this.ctx2D,i,j,rectX,rectY);
+
+				if(this.gameobject.has('Eat'))
 				this.gameobject.get('Eat').print(this.ctx2D,i,j,rectX,rectY);
+
 			    this.gameobject.get('Score').print(this.ctx2D,i,j,rectX,rectY);
 		   }
 		} 
 	}
 	
+	Delete(object){
+		delete this.gameobject[object];
+		console.log(`Объект ${object} удален`);
+	}
+
 	GameOver(){
 		this.ctx2D.fillStyle = 'black';
 		this.ctx2D.fillRect(0,0,this.playGround.clientWidth,this.playGround.clientHeight);
@@ -148,6 +157,7 @@ class Snake{
 	constructor(){
 			this.tails = new Array();
 			this.failed = false;
+			this.Esophagus = new Array(); // пищевод
 	}
 	
 	setHead(coorX,coorY,width,height){
@@ -206,7 +216,7 @@ class Snake{
   }
   
   LogicEat(eat,score){
-	  
+	
 		let end = this.tails.length - 1; // конец хвоста
 		
 		for(let ii = 1; ii < this.tails.length; ii++){
@@ -214,36 +224,58 @@ class Snake{
 				this.failed = true;
 			}
 		}
-		
+
 		if(this.tails[0].X == eat.X && this.tails[0].Y == eat.Y){
-			eat.Color = '#055a96';
+            
+			this.Esophagus.unshift({eatenX:eat.X,eatenY:eat.Y}); // получаем координаты съеденной пищи
+			game.Delete('Eat'); 					// удаляем съеденную пищу
+			game.SetGameObject('Eat',new Eat()); // устанавливаем в игре новую пищу
 			score.setScore(10);
 		}
-		if(this.tails[end].X == eat.X && this.tails[end].Y == eat.Y){
-			this.setTail(eat.X,eat.Y,20,20);
-			eat.RandomSpawn();
-		}
-	}
+		
+		for(const e of this.Esophagus){
 
+			if(this.tails[end].X == e.eatenX && this.tails[end].Y == e.eatenY){
+				this.setTail(e.eatenX,e.eatenY,20,20);
+				this.Esophagus.pop();   
+			}
+		}
+
+	}
 }
 
 class Eat{
 	constructor(){
-		this.X = undefined;
-		this.Y = undefined;
 		this.Width = 20;
 		this.Height = 20;
 		this.Color  = '#F55F90';
-	}
-	
-	RandomSpawn(){
-		 this.X = this.getRandomNumber(2,19);
-		 this.Y = this.getRandomNumber(2,19);
-		 this.Color = '#F55F90';
+		this.setRandomLocation();
+		this.replace = false;
 	}
 	
 	getRandomNumber(min,max){
 		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	setRandomLocation(){
+	  let randomcoor = setInterval(()=>{
+			this.X = this.getRandomNumber(2,19);
+			this.Y = this.getRandomNumber(2,19);
+			this.replace = false;
+			
+			for(let ii = 0; ii < snake.tails.length; ii++){
+				if(snake.tails[ii].X == this.X && snake.tails[ii].Y == this.Y){
+					this.X = -99;
+					this.Y = -99;
+					this.replace = true;
+					console.log('this.X = -99 this.Y = -99');
+					break;
+				}
+			}
+
+			if(this.replace == false)
+			clearInterval(randomcoor);
+			
+		},1000);
 	}
 	printCanvas(ctx2D,rectX,rectY){
 		ctx2D.fillStyle = this.Color;
@@ -270,16 +302,13 @@ class Tail{
 
 let game = new Game();
 let snake = new Snake();
-let eat = new Eat();
 let score = new Score();
-
-eat.RandomSpawn();  // генерируем рандомно еду 
 
 snake.setHead(5,5,20,20);  // начальная установка головы
 snake.tails[0].Dir = 'ArrowLeft'; // начальная установка направления 
 
 game.SetGameObject('Snake',snake); // добавляем в игру змейку
-game.SetGameObject('Eat',eat);     // добавляем в игру еду
+game.SetGameObject('Eat', new Eat());     // добавляем в игру еду
 game.SetGameObject('Score',score); // добавляем в игру очки
 
 game.Start();					  // запускаем игру
