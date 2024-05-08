@@ -1,12 +1,25 @@
+@font-face {
+    font-family: 'Agency FB';
+    src: url('font/agencyfb_bold.ttf') format('ttf');
+}
+
+
 body,html{
 	height:100%;
 	padding:0;
 	margin:0;
 }
 
+body{
+	background: rgb(15,15,15);
+	background: linear-gradient(140deg, rgba(15,15,15,1) 0%, rgba(102,193,198,1) 37%, rgba(198,198,198,1) 47%, rgba(47,128,158,1) 58%, rgba(23,23,23,1) 100%);
+
+}
 canvas{
-	background-color: #6dc987;
-	border: 1px solid black;
+	font-family: 'Agency FB';
+	background-color: #262626;
+	box-shadow: 0 0 18px black;
+	border: 2px solid #51DFFF;
 }
 
 .container{

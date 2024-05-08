@@ -92,13 +92,16 @@ class Game{
 		   for(let j = 0; j < 20; j++) {
 			   
 				let rectY = height/20 * j;
-				
+
 				this.gameobject.get('Snake').print(this.ctx2D,i,j,rectX,rectY);
 
 				if(this.gameobject.has('Eat'))
 				this.gameobject.get('Eat').print(this.ctx2D,i,j,rectX,rectY);
 
 			    this.gameobject.get('Score').print(this.ctx2D,i,j,rectX,rectY);
+
+				this.gameobject.get('Grid').print(this.ctx2D,i,j,rectX,rectY);
+
 		   }
 		} 
 	}
@@ -112,12 +115,34 @@ class Game{
 		this.ctx2D.fillStyle = 'black';
 		this.ctx2D.fillRect(0,0,this.playGround.clientWidth,this.playGround.clientHeight);
 		// ТЕКСТ
-		this.ctx2D.font = '30px Arial'; // Устанавливаем шрифт и размер текста
+		this.ctx2D.font = '30px Agency FB'; // Устанавливаем шрифт и размер текста
         this.ctx2D.fillStyle = 'white'; // Устанавливаем цвет текста
         this.ctx2D.fillText('GAME OVER',this.playGround.clientWidth/2 - 100,this.playGround.clientHeight/2 ); // Рисуем текст на указанных координатах
 		this.ctx2D.fillStyle = 'orange'; // Устанавливаем цвет текста
         this.ctx2D.fillText('Score: ' + this.gameobject.get('Score').getScore(),this.playGround.clientWidth/2 - 100,this.playGround.clientHeight/2 - 50 ); // Рисуем текст на указанных координатах
 	}
+}
+
+class Texture{
+
+	constructor(){
+		this.X = 0;
+		this.Y = 1;
+		this.Width = 20;
+		this.Height = 20;
+	}
+
+	printCanvas(ctx2D,rectX,rectY){
+		ctx2D.lineWidth = 1;
+		ctx2D.strokeStyle = '#333333';
+		ctx2D.strokeRect(rectX,rectY,this.Width,this.Height);
+	}
+
+	print(ctx2D,i,j,rX,rY){	
+
+		if(this.Y < j)
+		this.printCanvas(ctx2D,rX,rY);
+   }
 }
 
 class Score{
@@ -126,8 +151,8 @@ class Score{
 		this.X = 0;
 		this.Y = 1;
 		this.Width = 500;
-		this.Height = 40;
-		this.Color = '#224f31';
+		this.Height = 37;
+		this.Color = '#3F3E3D';
 	}
     
 	getScore(){
@@ -138,12 +163,18 @@ class Score{
 	}
 	
 	printCanvas(ctx2D,rectX,rectY){
+
+		// РАМКА
+		ctx2D.lineWidth = 3;
+		ctx2D.strokeStyle = '#51DFFF';
+		ctx2D.strokeRect(rectX,rectY,this.Width,this.Height);
+		// ФОН
 		ctx2D.fillStyle = this.Color;
 		ctx2D.fillRect(rectX,rectY,this.Width,this.Height);
 		// ТЕКСТ
-		ctx2D.font = '20px Arial'; // Устанавливаем шрифт и размер текста
+		ctx2D.font = '25px Agency FB'; // Устанавливаем шрифт и размер текста
         ctx2D.fillStyle = 'white'; // Устанавливаем цвет текста
-        ctx2D.fillText(this.getScore(), rectX + 190, rectY + 25); // Рисуем текст на указанных координатах
+        ctx2D.fillText(this.getScore(), rectX + 200, rectY + 25); // Рисуем текст на указанных координатах
 	}
 	
 	print(ctx2D,i,j,rX,rY){
@@ -153,24 +184,35 @@ class Score{
 	}
 }
 
+
 class Snake{
 	constructor(){
 			this.tails = new Array();
 			this.failed = false;
 			this.Esophagus = new Array(); // пищевод
+			this.image = new Image();
 	}
 	
-	setHead(coorX,coorY,width,height){
-		this.tails[0] = new Tail(coorX,coorY,width,height);
+	setHead(id,coorX,coorY,width,height){
+		this.tails[0] = new Tail(id,coorX,coorY,width,height);
 	}
-	setTail(coorX,coorY,width,height){
-		this.tails.push(new Tail(coorX,coorY,width,height));
+	setTail(id,coorX,coorY,width,height){
+		this.tails.push(new Tail(id,coorX,coorY,width,height));
 	}
 	
     printCanvas(ctx2D,segment,rectX,rectY){
             		// заново рисуем
-		ctx2D.fillStyle = segment.Color;
-		ctx2D.fillRect(rectX,rectY,segment.Width,segment.Height);
+		/*ctx2D.fillStyle = segment.Color;
+		ctx2D.fillRect(rectX,rectY,segment.Width,segment.Height);*/
+
+		if(segment.id == 'head'){
+			this.image.src = "Image/tail.png";
+			
+		}else{
+			this.image.src = "Image/head.png";
+		}
+
+		ctx2D.drawImage(this.image,rectX,rectY,segment.Width,segment.Height);
 			// Рисуем рамку прямоугольника
     }
 	
@@ -236,7 +278,7 @@ class Snake{
 		for(const e of this.Esophagus){
 
 			if(this.tails[end].X == e.eatenX && this.tails[end].Y == e.eatenY){
-				this.setTail(e.eatenX,e.eatenY,20,20);
+				this.setTail('tail',e.eatenX,e.eatenY,20,20);
 				this.Esophagus.pop();   
 			}
 		}
@@ -248,9 +290,10 @@ class Eat{
 	constructor(){
 		this.Width = 20;
 		this.Height = 20;
-		this.Color  = '#F55F90';
+		this.Color  = '#FF2E00';
 		this.setRandomLocation();
 		this.replace = false;
+		this.image = new Image();
 	}
 	
 	getRandomNumber(min,max){
@@ -278,8 +321,9 @@ class Eat{
 		},1000);
 	}
 	printCanvas(ctx2D,rectX,rectY){
-		ctx2D.fillStyle = this.Color;
-		ctx2D.fillRect(rectX,rectY,this.Width,this.Height);
+
+		this.image.src = 'Image/eat.png';
+		ctx2D.drawImage(this.image,rectX,rectY,this.Width,this.Height);
 	}
 	print(ctx2D,i,j,rX,rY){
 		 if(this.X == i && this.Y == j){
@@ -290,7 +334,8 @@ class Eat{
 }
 
 class Tail{
-	constructor(coorX,coorY,width,height){
+	constructor(id,coorX,coorY,width,height){
+		this.id = id;
 		this.X = coorX;
 		this.Y = coorY;
 		this.Width = width;
@@ -304,11 +349,12 @@ let game = new Game();
 let snake = new Snake();
 let score = new Score();
 
-snake.setHead(5,5,20,20);  // начальная установка головы
+snake.setHead('head',5,5,20,20);  // начальная установка головы
 snake.tails[0].Dir = 'ArrowLeft'; // начальная установка направления 
 
 game.SetGameObject('Snake',snake); // добавляем в игру змейку
 game.SetGameObject('Eat', new Eat());     // добавляем в игру еду
 game.SetGameObject('Score',score); // добавляем в игру очки
+game.SetGameObject('Grid',new Texture()); // добавляем в игру сетку
 
 game.Start();					  // запускаем игру
