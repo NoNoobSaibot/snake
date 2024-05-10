@@ -17,7 +17,8 @@ class Game{
 	Setting(){
 		this.playGround = document.querySelector('canvas');
 		this.playGround.style.backgroundColor = '#6dc98';
-		
+		this.playGround.width = 400;
+		this.playGround.height = 400;
 		this.gameobject = new Map();
 		
 		this.ctx2D = this.playGround.getContext("2d");
@@ -194,26 +195,14 @@ class Snake{
 	}
 	
 	setHead(id,coorX,coorY,width,height){
-		this.tails[0] = new Tail(id,coorX,coorY,width,height);
+		this.tails[0] = new Tail(id,'Image/head.png',coorX,coorY,width,height);
 	}
 	setTail(id,coorX,coorY,width,height){
-		this.tails.push(new Tail(id,coorX,coorY,width,height));
+		this.tails.push(new Tail(id,'Image/tail.png',coorX,coorY,width,height));
 	}
 	
     printCanvas(ctx2D,segment,rectX,rectY){
-            		// заново рисуем
-		/*ctx2D.fillStyle = segment.Color;
-		ctx2D.fillRect(rectX,rectY,segment.Width,segment.Height);*/
-
-		if(segment.id == 'head'){
-			this.image.src = "Image/tail.png";
-			
-		}else{
-			this.image.src = "Image/head.png";
-		}
-
-		ctx2D.drawImage(this.image,rectX,rectY,segment.Width,segment.Height);
-			// Рисуем рамку прямоугольника
+		ctx2D.drawImage(segment.Image,rectX,rectY,segment.Width,segment.Height);
     }
 	
 	print(ctx2D,i,j,rX,rY){
@@ -334,14 +323,19 @@ class Eat{
 }
 
 class Tail{
-	constructor(id,coorX,coorY,width,height){
+	constructor(id,path,coorX,coorY,width,height){
 		this.id = id;
 		this.X = coorX;
 		this.Y = coorY;
 		this.Width = width;
 		this.Height = height;
-		this.Color  = '#055a96';
 		this.Dir = 'None';
+		this.Image = new Image();
+		this.ImageInit(path);
+	}
+
+	ImageInit(path){
+		this.Image.src = path;
 	}
 }
 
@@ -349,7 +343,7 @@ let game = new Game();
 let snake = new Snake();
 let score = new Score();
 
-snake.setHead('head',5,5,20,20);  // начальная установка головы
+snake.setHead('head',10,10,20,20);  // начальная установка головы
 snake.tails[0].Dir = 'ArrowLeft'; // начальная установка направления 
 
 game.SetGameObject('Snake',snake); // добавляем в игру змейку
@@ -358,3 +352,8 @@ game.SetGameObject('Score',score); // добавляем в игру очки
 game.SetGameObject('Grid',new Texture()); // добавляем в игру сетку
 
 game.Start();					  // запускаем игру
+
+
+/*
+
+*/
